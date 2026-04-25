@@ -28,9 +28,18 @@ flutter build apk --debug    # Android debug build
 
 `lib/main.dart` → `LinkUpApp` (MaterialApp with `buildLinkUpTheme()`) → `RoleSelector` (`lib/shell.dart`).
 
-`RoleSelector` is the top-level shell. It owns two pieces of state: the active `LinkUpRole` (freelancer/company) and a `_showOnboarding` flag. It renders a header with the LinkUp wordmark and a Freelancer/Empresa toggle, then swaps the body between `OnboardingScreen` / `CompanyOnboardingScreen` and the role's shell. The role toggle dismisses onboarding so switching roles after first launch goes straight to the app.
+`RoleSelector` is the top-level shell. Auth state lives **outside the widget tree** in `LinkUpAuth.instance` — a singleton with `ValueNotifier`s for `activeRole` and a per-role `Map<LinkUpRole, AuthStage>` (`AuthStage = onboarding | login | register | app`). `RoleSelector` is a `StatelessWidget` that wraps two `ValueListenableBuilder`s, so any pushed route can read or mutate auth state via `LinkUpAuth.instance` without needing an `InheritedWidget` ancestor (root-Navigator routes don't have one).
 
-Each role has its own shell:
+The Freelancer/Empresa toggle in the header is **only shown while the active role is in auth (onboarding/login/register)**. Once the role reaches `AuthStage.app`, the header collapses to a static role pill — preventing a signed-in user from one-clicking into the other role's app without authentication.
+
+To swap roles after signing in: Settings → "Trocar para …" pops back to root, signs out the current role, and switches `activeRole`. `LinkUpAuth.signOut(role)` and `LinkUpAuth.switchToOtherRole(context)` are the only two ways to leave the app shell.
+
+The auth flow lives under `lib/screens/auth/`:
+- `OnboardingScreen` / `CompanyOnboardingScreen` (onboarding carousel) → `onCreateAccount` / `onSignIn` callbacks dispatched by the shell.
+- `login_screen.dart`, `register_screen.dart` (3 steps), `forgot_password_screen.dart`, `otp_verify_screen.dart`, `reset_password_screen.dart`, plus shared `auth_scaffold.dart` for the consistent header.
+- All auth is mocked: any 6-digit OTP except `000000` succeeds; the Google button simulates ~1.5s delay then signs in.
+
+Each role has its own shell post-auth:
 - `screens/freelancer/freelancer_shell.dart` — 5 tabs (Início, Procurar, Candidatu., Mensagens, Perfil), green accent.
 - `screens/company/company_shell.dart` — 5 tabs (Painel, Talento, Vagas, Mensagens, Empresa), navy accent.
 
@@ -42,8 +51,9 @@ Tabs that need cross-tab navigation (e.g. Home → Search) call back to the shel
 
 - `lib/theme.dart` — `LinkUpColors` (palette: green `#0F4F47`, navy `#142F4C`, gold `#C9A24F`, off-white `#F5F2EC`, plus pill/text/status variants), `buildLinkUpTheme()`, font helpers `linkupMono()` / `linkupSerif()`. Always reference colors via `LinkUpColors.*`, never hex literals — the design system is the source of truth.
 - `lib/data.dart` — every model class (`FreelancerCardData`, `JobData`, `ChatData`, `CandidateData`, etc.) and every `const` mock list (`freelancers`, `jobs`, `chats`, `candidatesPipeline`, `companyJobs`, `payments`, `notifications`, `reviews`, `portfolio`, `statusLabels`). When adding a feature, add the data here first; screens import directly from `data.dart`.
-- `lib/widgets.dart` — design-system primitives: `LuAvatar`, `LuPill` (with `PillColor`/`PillSize` enums), `LuBtn` (`BtnVariant`/`BtnSize`), `LuCard`, `LuStars`, `LuTopBar`, `LuIconBtn`, `LuProgressBar`, `LuDivider`, `LuInputField`, `LuToggleRow`, `LuSectionTitle`, `LuStat`, `LuPlaceholder`, `LuLogoMark`, `LuWordmark`, and `LuReputationRadar` (custom-painted). **Build screens out of these primitives** — don't reach for raw `Container`+`BoxDecoration` when a Lu* widget already encodes the styling.
-- `lib/screens/freelancer/` and `lib/screens/company/` — screens. Freelancer chat (`chat_list_screen.dart`, `chat_screen.dart`) and `settings_screen.dart` are reused by the company shell.
+- `lib/widgets.dart` — design-system primitives: `LuAvatar`, `LuPill` (with `PillColor`/`PillSize` enums), `LuBtn` (`BtnVariant`/`BtnSize`), `LuCard`, `LuStars`, `LuTopBar`, `LuIconBtn`, `LuProgressBar`, `LuDivider`, `LuInputField`, `LuToggleRow`, `LuSectionTitle`, `LuStat`, `LuPlaceholder`, `LuLogoMark`, `LuWordmark`, `LuReputationRadar` (custom-painted), plus the auth & interaction primitives: `LuPasswordField`, `LuPasswordStrength`, `LuSocialBtn` (Google/Apple), `LuOtpInput`, `LuRadioList<T>`, `LuBottomSheet.show`, `LuConfirmDialog.show`, and the `luSnack(context, msg)` helper for confirmation toasts. **Build screens out of these primitives** — don't reach for raw `Container`+`BoxDecoration` when a Lu* widget already encodes the styling.
+- `lib/screens/auth/` — login, register, forgot-password, OTP, reset-password + shared `AuthScaffold`. Reused for both roles via the `role` parameter (which colours the accents and CTAs).
+- `lib/screens/freelancer/` and `lib/screens/company/` — feature screens. Several are shared across roles: `chat_list_screen.dart`, `chat_screen.dart`, `settings_screen.dart` (with a `role` param that conditionally shows team-management rows for company), `ubuntu_verification_screen.dart`. Auth-side reaches into both folders, so don't be alarmed by cross-folder imports.
 
 ### Conventions
 
@@ -55,3 +65,5 @@ Tabs that need cross-tab navigation (e.g. Home → Search) call back to the shel
 - **Status pills** for applications come from `statusLabels` in `data.dart` (don't hardcode the label/color in screens).
 - **Numeric formatting**: MZN amounts are dot-separated (`320.000 MZN`). The screens that format integers (wallet, search, freelancer detail, post job review) each have a private `_format(int)` helper — copy that pattern rather than inventing another.
 - **No emoji in code** unless it's intentional UI content (notification icons in `data.dart` use them).
+- **Dead-end actions**: every `IconBtn` and clickable row should do *something* — push a screen, open `LuBottomSheet.show`, fire a `LuConfirmDialog.show`, or surface a `luSnack(context, '…')`. Never leave `onPressed: () {}`.
+- **Logout pattern**: settings → `LuConfirmDialog.show(...destructive: true)` → `Navigator.popUntil(root)` + `LinkUpAuth.instance.signOut(role)`. The `ValueNotifier` on `_stages` triggers `RoleSelector` to rebuild and show the onboarding for that role. **Never** call `LinkUpAuthScope.of(context)` — that pattern was removed because `InheritedWidget` is unreachable from routes pushed on the root `Navigator`.

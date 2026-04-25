@@ -373,3 +373,186 @@ const statusLabels = <String, StatusLabel>{
   'aceite': StatusLabel('Aceite', LinkUpColors.green, LinkUpColors.pillGreenBg),
   'rejeitada': StatusLabel('Não seleccionada', LinkUpColors.textMuted, LinkUpColors.pillNeutralBg),
 };
+
+// ──────────────────────────────────────────────────────────────────────────
+// Team members (company side)
+// ──────────────────────────────────────────────────────────────────────────
+class TeamMember {
+  final String id, name, email, role, avatar;
+  final Color bg;
+  final bool isOwner;
+  const TeamMember({
+    required this.id, required this.name, required this.email, required this.role,
+    required this.avatar, required this.bg, this.isOwner = false,
+  });
+}
+
+const teamMembers = <TeamMember>[
+  TeamMember(id: 'tm1', name: 'Inês Mondlane', email: 'ines.mondlane@bancoherc.co.mz', role: 'Admin', avatar: 'IM', bg: LinkUpColors.navy, isOwner: true),
+  TeamMember(id: 'tm2', name: 'Carlos Mucavele', email: 'carlos.mucavele@bancoherc.co.mz', role: 'Recruiter', avatar: 'CM', bg: LinkUpColors.green),
+  TeamMember(id: 'tm3', name: 'Lúcia Bila', email: 'lucia.bila@bancoherc.co.mz', role: 'Finanças', avatar: 'LB', bg: LinkUpColors.gold),
+  TeamMember(id: 'tm4', name: 'Jorge Mate', email: 'jorge.mate@bancoherc.co.mz', role: 'Visualizador', avatar: 'JM', bg: LinkUpColors.greenDark),
+];
+
+const teamRoles = <String, String>{
+  'Admin': 'Acesso total · gerir equipa, faturação e vagas',
+  'Recruiter': 'Publicar vagas, gerir candidatos e mensagens',
+  'Finanças': 'Aprovar pagamentos e libertar escrow',
+  'Visualizador': 'Apenas leitura · sem alterações',
+};
+
+// ──────────────────────────────────────────────────────────────────────────
+// FAQ / Support
+// ──────────────────────────────────────────────────────────────────────────
+class FaqArticle {
+  final String id, question, answer, category;
+  const FaqArticle({required this.id, required this.question, required this.answer, required this.category});
+}
+
+const faqArticles = <FaqArticle>[
+  FaqArticle(id: 'fq1', category: 'Pagamentos', question: 'Como funciona o pagamento em escrow?',
+    answer: 'Os fundos da empresa são bloqueados no LinkUp assim que aceitas o projecto. Quando entregas cada milestone e a empresa valida, o valor correspondente é libertado para a tua carteira em até 24h.'),
+  FaqArticle(id: 'fq2', category: 'Pagamentos', question: 'Quais são as taxas?',
+    answer: 'O LinkUp cobra 8% sobre o valor de cada projecto concluído. Não há taxas fixas mensais nem custos de subscrição. Os levantamentos por M-Pesa têm custo zero; transferências bancárias custam 25 MZN por operação.'),
+  FaqArticle(id: 'fq3', category: 'Disputas', question: 'O que acontece se não chegarmos a acordo?',
+    answer: 'Podes abrir uma disputa em qualquer milestone. Um mediador independente do LinkUp analisa as conversas, anexos e entregas em até 3 dias úteis e propõe uma resolução vinculativa.'),
+  FaqArticle(id: 'fq4', category: 'Verificação', question: 'Como obter o selo Ubuntu?',
+    answer: 'Para freelancers: 5+ projectos concluídos com avaliação ≥ 4.5 + verificação de identidade. Para empresas: NUIT validado + histórico de 3 pagamentos sem incidentes.'),
+  FaqArticle(id: 'fq5', category: 'Conta', question: 'Posso ter conta freelancer e empresa?',
+    answer: 'Sim. Cada papel tem o seu perfil, faturação e histórico independentes. Podes alternar a partir do switch no topo da app sem terminar sessão.'),
+  FaqArticle(id: 'fq6', category: 'Segurança', question: 'A minha conversa é privada?',
+    answer: 'Todas as mensagens são encriptadas em trânsito e armazenadas com encriptação AES-256. Só tu e o destinatário têm acesso ao conteúdo. O LinkUp não usa o conteúdo das tuas conversas para treinar modelos.'),
+];
+
+const supportChannels = <({String label, String detail, IconData icon, String tag})>[
+  (label: 'Chat ao vivo', detail: 'Resposta em ~3 minutos · 8h-22h', icon: Icons.chat_bubble_outline, tag: 'online'),
+  (label: 'Email', detail: 'apoio@linkup.co.mz', icon: Icons.alternate_email, tag: '24h'),
+  (label: 'WhatsApp', detail: '+258 84 100 0000', icon: Icons.phone_android, tag: '24h'),
+];
+
+// ──────────────────────────────────────────────────────────────────────────
+// Wallet — withdrawals & payout methods
+// ──────────────────────────────────────────────────────────────────────────
+class WithdrawalRecord {
+  final String id, date, method, status;
+  final int amount, fee;
+  const WithdrawalRecord({required this.id, required this.date, required this.method, required this.amount, required this.fee, required this.status});
+}
+
+const withdrawalHistory = <WithdrawalRecord>[
+  WithdrawalRecord(id: 'wh1', date: '20 Abr 2026', method: 'M-Pesa · 84·····321', amount: 200000, fee: 0, status: 'concluído'),
+  WithdrawalRecord(id: 'wh2', date: '02 Abr 2026', method: 'IBAN ····5482', amount: 350000, fee: 25, status: 'concluído'),
+  WithdrawalRecord(id: 'wh3', date: '15 Mar 2026', method: 'M-Pesa · 84·····321', amount: 80000, fee: 0, status: 'concluído'),
+  WithdrawalRecord(id: 'wh4', date: '28 Fev 2026', method: 'M-Pesa · 84·····321', amount: 120000, fee: 0, status: 'concluído'),
+];
+
+class PayoutMethod {
+  final String id, name, masked, icon, type;
+  final bool primary;
+  const PayoutMethod({required this.id, required this.name, required this.masked, required this.icon, required this.type, this.primary = false});
+}
+
+const payoutMethods = <PayoutMethod>[
+  PayoutMethod(id: 'pm1', name: 'M-Pesa', masked: '84·····321', icon: '📱', type: 'mobile', primary: true),
+  PayoutMethod(id: 'pm2', name: 'Banco Hércules', masked: 'IBAN ····5482', icon: '🏦', type: 'bank'),
+];
+
+// ──────────────────────────────────────────────────────────────────────────
+// Languages & currencies (settings radio lists)
+// ──────────────────────────────────────────────────────────────────────────
+class LanguageOption {
+  final String code, label, native;
+  const LanguageOption({required this.code, required this.label, required this.native});
+}
+
+const languages = <LanguageOption>[
+  LanguageOption(code: 'pt', label: 'Português', native: 'Português (Moçambique)'),
+  LanguageOption(code: 'en', label: 'English', native: 'English (US)'),
+  LanguageOption(code: 'cha', label: 'Changana', native: 'Xichangana'),
+  LanguageOption(code: 'mac', label: 'Macua', native: 'Emakhuwa'),
+];
+
+class CurrencyOption {
+  final String code, label, symbol;
+  const CurrencyOption({required this.code, required this.label, required this.symbol});
+}
+
+const currencies = <CurrencyOption>[
+  CurrencyOption(code: 'MZN', label: 'Metical Moçambicano', symbol: 'MZN'),
+  CurrencyOption(code: 'USD', label: 'Dólar Americano', symbol: '\$'),
+  CurrencyOption(code: 'EUR', label: 'Euro', symbol: '€'),
+  CurrencyOption(code: 'ZAR', label: 'Rand Sul-Africano', symbol: 'R'),
+];
+
+// ──────────────────────────────────────────────────────────────────────────
+// Terms of Service sections
+// ──────────────────────────────────────────────────────────────────────────
+class TermsSection {
+  final String title, body;
+  const TermsSection({required this.title, required this.body});
+}
+
+const termsSections = <TermsSection>[
+  TermsSection(
+    title: '1. Uso da plataforma',
+    body: 'O LinkUp é uma plataforma de intermediação entre freelancers e empresas em Moçambique. Ao criares uma conta, comprometes-te a usar o serviço de boa-fé, sem tentar enganar contrapartes ou contornar os mecanismos de pagamento e avaliação.',
+  ),
+  TermsSection(
+    title: '2. Privacidade e dados',
+    body: 'Recolhemos os dados estritamente necessários para operar a plataforma: identificação, contactos, histórico de transacções e conversas. Não vendemos dados a terceiros. Tens direito a aceder, corrigir ou eliminar os teus dados a qualquer momento via Configurações.',
+  ),
+  TermsSection(
+    title: '3. Pagamentos e escrow',
+    body: 'Os fundos de cada projecto ficam em escrow até validação de cada milestone. O LinkUp retém 8% do valor de cada projecto concluído como comissão. Os levantamentos via M-Pesa são gratuitos; transferências bancárias têm um custo fixo de 25 MZN.',
+  ),
+  TermsSection(
+    title: '4. Disputas e mediação',
+    body: 'Em caso de desacordo entre as partes, qualquer uma pode abrir uma disputa. O LinkUp aplica um processo de mediação independente em até 3 dias úteis, com base nas conversas e entregas registadas na plataforma. A decisão da mediação é vinculativa.',
+  ),
+  TermsSection(
+    title: '5. Verificação Ubuntu',
+    body: 'O selo Ubuntu certifica empresas com NUIT validado e histórico de pagamentos sem incidentes, e freelancers com identidade confirmada e ≥ 5 projectos concluídos com avaliação média ≥ 4.5. A perda dos critérios pode resultar na suspensão do selo.',
+  ),
+];
+
+// ──────────────────────────────────────────────────────────────────────────
+// Contract milestones (drill-down from contracts)
+// ──────────────────────────────────────────────────────────────────────────
+class MilestoneData {
+  final String id, label, dueDate, status;
+  final int amount;
+  final int order;
+  const MilestoneData({required this.id, required this.label, required this.amount, required this.dueDate, required this.status, required this.order});
+}
+
+const contractMilestones = <String, List<MilestoneData>>{
+  'co1': [
+    MilestoneData(id: 'm1', label: 'Pesquisa & descoberta', amount: 96000, dueDate: '02 Mai', status: 'concluido', order: 1),
+    MilestoneData(id: 'm2', label: 'Wireframes & estrutura', amount: 96000, dueDate: '15 Mai', status: 'em-curso', order: 2),
+    MilestoneData(id: 'm3', label: 'Design final + handoff', amount: 128000, dueDate: '30 Mai', status: 'pendente', order: 3),
+  ],
+  'co2': [
+    MilestoneData(id: 'm4', label: 'Setup do projecto', amount: 56000, dueDate: '15 Abr', status: 'concluido', order: 1),
+    MilestoneData(id: 'm5', label: 'Sprint 1 — autenticação', amount: 84000, dueDate: '25 Abr', status: 'concluido', order: 2),
+    MilestoneData(id: 'm6', label: 'Sprint 2 — dashboards', amount: 84000, dueDate: '08 Mai', status: 'em-curso', order: 3),
+    MilestoneData(id: 'm7', label: 'Entrega final + QA', amount: 56000, dueDate: '20 Mai', status: 'pendente', order: 4),
+  ],
+  'co3': [
+    MilestoneData(id: 'm8', label: 'Tradução completa', amount: 45000, dueDate: '20 Abr', status: 'concluido', order: 1),
+  ],
+  'co4': [
+    MilestoneData(id: 'm9', label: 'Recolha de documentos', amount: 30000, dueDate: '30 Abr', status: 'pendente', order: 1),
+    MilestoneData(id: 'm10', label: 'Auditoria + relatório', amount: 60000, dueDate: '15 Mai', status: 'pendente', order: 2),
+  ],
+};
+
+// ──────────────────────────────────────────────────────────────────────────
+// Categories for portfolio (used in add_portfolio_item)
+// ──────────────────────────────────────────────────────────────────────────
+const portfolioCategories = <String>[
+  'Fintech', 'Agritech', 'Branding', 'Design System', 'EdTech', 'Marketing', 'Mobile', 'Web', 'E-commerce', 'Sem categoria',
+];
+
+const portfolioCovers = <Color>[
+  LinkUpColors.green, LinkUpColors.greenDark, LinkUpColors.gold, LinkUpColors.navy, LinkUpColors.cream, Color(0xFFE8ECF1),
+];

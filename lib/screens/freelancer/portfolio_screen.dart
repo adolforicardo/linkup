@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 import '../../data.dart';
+import 'add_portfolio_item_screen.dart';
 
 class PortfolioScreen extends StatelessWidget {
   const PortfolioScreen({super.key});
@@ -16,7 +17,8 @@ class PortfolioScreen extends StatelessWidget {
             LuTopBar(
               title: 'Portfólio',
               leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
-              actions: [LuIconBtn(icon: Icons.add, onPressed: () {})],
+              actions: [LuIconBtn(icon: Icons.add, onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AddPortfolioItemScreen())))],
             ),
             Expanded(
               child: GridView.count(

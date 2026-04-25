@@ -794,3 +794,553 @@ class LuStat extends StatelessWidget {
     );
   }
 }
+
+// ──────────────────────────────────────────────────────────────────────────
+// Password field with reveal toggle
+// ──────────────────────────────────────────────────────────────────────────
+class LuPasswordField extends StatefulWidget {
+  final String? label;
+  final TextEditingController? controller;
+  final String? placeholder;
+  final ValueChanged<String>? onChanged;
+  const LuPasswordField({super.key, this.label, this.controller, this.placeholder, this.onChanged});
+
+  @override
+  State<LuPasswordField> createState() => _LuPasswordFieldState();
+}
+
+class _LuPasswordFieldState extends State<LuPasswordField> {
+  bool _obscure = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.label != null) ...[
+          Text(widget.label!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: LinkUpColors.textSecondary)),
+          const SizedBox(height: 6),
+        ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          decoration: BoxDecoration(
+            color: LinkUpColors.surfaceTint,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: LinkUpColors.border),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.lock_outline, size: 18, color: LinkUpColors.textMuted),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: widget.controller,
+                  onChanged: widget.onChanged,
+                  obscureText: _obscure,
+                  decoration: InputDecoration(
+                    hintText: widget.placeholder,
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    hintStyle: const TextStyle(color: LinkUpColors.textMuted, fontSize: 14),
+                  ),
+                  style: const TextStyle(fontSize: 14, color: LinkUpColors.textPrimary),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => setState(() => _obscure = !_obscure),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  child: Icon(
+                    _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    size: 18, color: LinkUpColors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Password strength meter
+// ──────────────────────────────────────────────────────────────────────────
+class LuPasswordStrength extends StatelessWidget {
+  final String password;
+  const LuPasswordStrength({super.key, required this.password});
+
+  int get _score {
+    if (password.isEmpty) return 0;
+    var s = 0;
+    if (password.length >= 8) s++;
+    if (RegExp(r'[A-Z]').hasMatch(password)) s++;
+    if (RegExp(r'[0-9]').hasMatch(password)) s++;
+    if (RegExp(r'[^A-Za-z0-9]').hasMatch(password)) s++;
+    return s;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final score = _score;
+    final labels = ['', 'Fraca', 'Razoável', 'Boa', 'Forte'];
+    final colors = [LinkUpColors.textDisabled, LinkUpColors.danger, LinkUpColors.gold, LinkUpColors.green, LinkUpColors.successFg];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            for (int i = 0; i < 4; i++) ...[
+              Expanded(
+                child: Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: i < score ? colors[score] : LinkUpColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              if (i < 3) const SizedBox(width: 4),
+            ],
+          ],
+        ),
+        if (score > 0) ...[
+          const SizedBox(height: 6),
+          Text('Força: ${labels[score]}', style: TextStyle(fontSize: 11, color: colors[score], fontWeight: FontWeight.w700)),
+        ],
+      ],
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Social sign-in button (Google / Apple)
+// ──────────────────────────────────────────────────────────────────────────
+enum SocialProvider { google, apple }
+
+class LuSocialBtn extends StatelessWidget {
+  final SocialProvider provider;
+  final VoidCallback? onPressed;
+  final String? label;
+  const LuSocialBtn({super.key, required this.provider, this.onPressed, this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = label ?? (provider == SocialProvider.google ? 'Continuar com Google' : 'Continuar com Apple');
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: provider == SocialProvider.apple ? const Color(0xFF1A1F1D) : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: provider == SocialProvider.apple ? Colors.transparent : LinkUpColors.borderStrong),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (provider == SocialProvider.google)
+              const _GoogleLogo(size: 18)
+            else
+              const Icon(Icons.apple, size: 22, color: Colors.white),
+            const SizedBox(width: 10),
+            Text(text, style: TextStyle(
+              color: provider == SocialProvider.apple ? Colors.white : LinkUpColors.textPrimary,
+              fontSize: 14.5, fontWeight: FontWeight.w600, letterSpacing: -0.15,
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GoogleLogo extends StatelessWidget {
+  final double size;
+  const _GoogleLogo({this.size = 18});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(width: size, height: size, child: CustomPaint(painter: _GoogleLogoPainter()));
+  }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2, cy = size.height / 2;
+    final r = size.width * 0.46;
+    final p = Paint();
+    final colors = [
+      const Color(0xFF4285F4),
+      const Color(0xFF34A853),
+      const Color(0xFFFBBC05),
+      const Color(0xFFEA4335),
+    ];
+    for (int i = 0; i < 4; i++) {
+      p.color = colors[i];
+      final start = -math.pi / 2 + (math.pi / 2) * i;
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: r),
+        start, math.pi / 2, true, p,
+      );
+    }
+    p.color = Colors.white;
+    canvas.drawCircle(Offset(cx, cy), r * 0.55, p);
+    final tp = TextPainter(
+      text: TextSpan(text: 'G', style: GoogleFonts.plusJakartaSans(
+        color: const Color(0xFF4285F4), fontSize: size.width * 0.62, fontWeight: FontWeight.w700,
+      )),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, Offset(cx - tp.width / 2, cy - tp.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// OTP input — 6-digit auto-advance with paste
+// ──────────────────────────────────────────────────────────────────────────
+class LuOtpInput extends StatefulWidget {
+  final int length;
+  final ValueChanged<String>? onCompleted;
+  final ValueChanged<String>? onChanged;
+  final bool error;
+  const LuOtpInput({super.key, this.length = 6, this.onCompleted, this.onChanged, this.error = false});
+
+  @override
+  State<LuOtpInput> createState() => _LuOtpInputState();
+}
+
+class _LuOtpInputState extends State<LuOtpInput> {
+  late final List<TextEditingController> _ctrls;
+  late final List<FocusNode> _nodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrls = List.generate(widget.length, (_) => TextEditingController());
+    _nodes = List.generate(widget.length, (_) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (final c in _ctrls) {
+      c.dispose();
+    }
+    for (final n in _nodes) {
+      n.dispose();
+    }
+    super.dispose();
+  }
+
+  String get _value => _ctrls.map((c) => c.text).join();
+
+  void _handleChanged(int i, String v) {
+    if (v.length > 1) {
+      // paste
+      for (int k = 0; k < widget.length && k < v.length; k++) {
+        _ctrls[k].text = v[k];
+      }
+      _nodes[(v.length - 1).clamp(0, widget.length - 1)].requestFocus();
+    } else if (v.isNotEmpty && i < widget.length - 1) {
+      _nodes[i + 1].requestFocus();
+    } else if (v.isEmpty && i > 0) {
+      _nodes[i - 1].requestFocus();
+    }
+    widget.onChanged?.call(_value);
+    if (_value.length == widget.length) widget.onCompleted?.call(_value);
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        for (int i = 0; i < widget.length; i++) Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: i < widget.length - 1 ? 8 : 0),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: LinkUpColors.surfaceTint,
+                  border: Border.all(
+                    color: widget.error
+                        ? LinkUpColors.danger
+                        : (_ctrls[i].text.isNotEmpty ? LinkUpColors.green : LinkUpColors.border),
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: TextField(
+                  controller: _ctrls[i],
+                  focusNode: _nodes[i],
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: i == 0 ? widget.length : 1,
+                  onChanged: (v) => _handleChanged(i, v),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: LinkUpColors.navy),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none, counterText: '', contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// iOS-style radio list (single select)
+// ──────────────────────────────────────────────────────────────────────────
+class LuRadioListItem<T> {
+  final T value;
+  final String label;
+  final String? sub;
+  final IconData? icon;
+  const LuRadioListItem({required this.value, required this.label, this.sub, this.icon});
+}
+
+class LuRadioList<T> extends StatelessWidget {
+  final List<LuRadioListItem<T>> items;
+  final T selected;
+  final ValueChanged<T> onChanged;
+  final Color accent;
+  const LuRadioList({super.key, required this.items, required this.selected, required this.onChanged, this.accent = LinkUpColors.green});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: LinkUpColors.border),
+      ),
+      child: Column(
+        children: [
+          for (int i = 0; i < items.length; i++) ...[
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => onChanged(items[i].value),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                child: Row(
+                  children: [
+                    if (items[i].icon != null) ...[
+                      Container(
+                        width: 32, height: 32,
+                        decoration: BoxDecoration(color: LinkUpColors.surfaceTint, borderRadius: BorderRadius.circular(9)),
+                        child: Icon(items[i].icon, size: 16, color: accent),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(items[i].label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          if (items[i].sub != null) ...[
+                            const SizedBox(height: 2),
+                            Text(items[i].sub!, style: const TextStyle(fontSize: 11.5, color: LinkUpColors.textMuted)),
+                          ],
+                        ],
+                      ),
+                    ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      width: 22, height: 22,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: items[i].value == selected ? accent : LinkUpColors.textDisabled, width: 2),
+                      ),
+                      child: items[i].value == selected
+                          ? Center(child: Container(width: 10, height: 10, decoration: BoxDecoration(color: accent, shape: BoxShape.circle)))
+                          : null,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (i < items.length - 1) const Divider(height: 1, thickness: 1, color: LinkUpColors.border, indent: 14, endIndent: 14),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Bottom sheet helper
+// ──────────────────────────────────────────────────────────────────────────
+class LuBottomSheetAction {
+  final IconData icon;
+  final String label;
+  final String? sub;
+  final VoidCallback? onTap;
+  final bool destructive;
+  const LuBottomSheetAction({required this.icon, required this.label, this.sub, this.onTap, this.destructive = false});
+}
+
+class LuBottomSheet {
+  static Future<T?> show<T>(BuildContext context, {required String title, required List<LuBottomSheetAction> actions}) {
+    return showModalBottomSheet<T>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(color: LinkUpColors.borderStrong, borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, letterSpacing: -0.4)),
+            const SizedBox(height: 12),
+            for (final a in actions) GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                Navigator.pop(sheetCtx);
+                a.onTap?.call();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(
+                        color: a.destructive ? LinkUpColors.dangerBg : LinkUpColors.surfaceTint,
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Icon(a.icon, size: 18, color: a.destructive ? LinkUpColors.danger : LinkUpColors.green),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(a.label, style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w600,
+                            color: a.destructive ? LinkUpColors.danger : LinkUpColors.textPrimary,
+                          )),
+                          if (a.sub != null) ...[
+                            const SizedBox(height: 2),
+                            Text(a.sub!, style: const TextStyle(fontSize: 11.5, color: LinkUpColors.textMuted)),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, size: 18, color: LinkUpColors.textMuted),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Confirm dialog helper
+// ──────────────────────────────────────────────────────────────────────────
+class LuConfirmDialog {
+  static Future<bool> show(
+    BuildContext context, {
+    required String title,
+    required String message,
+    String confirmLabel = 'Confirmar',
+    String cancelLabel = 'Cancelar',
+    bool destructive = false,
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56, height: 56,
+                decoration: BoxDecoration(
+                  color: destructive ? LinkUpColors.dangerBg : LinkUpColors.pillGreenBg,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  destructive ? Icons.warning_amber_rounded : Icons.help_outline,
+                  size: 28, color: destructive ? LinkUpColors.danger : LinkUpColors.green,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(title, textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.4, color: LinkUpColors.navy),
+              ),
+              const SizedBox(height: 6),
+              Text(message, textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 13, color: LinkUpColors.textSecondary, height: 1.45),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(child: LuBtn(cancelLabel, variant: BtnVariant.secondary, full: true, onPressed: () => Navigator.pop(ctx, false))),
+                  const SizedBox(width: 8),
+                  Expanded(child: LuBtn(confirmLabel,
+                    variant: destructive ? BtnVariant.danger : BtnVariant.primary,
+                    full: true,
+                    onPressed: () => Navigator.pop(ctx, true),
+                  )),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    return result ?? false;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Snackbar helper (shorthand)
+// ──────────────────────────────────────────────────────────────────────────
+void luSnack(BuildContext context, String message, {IconData icon = Icons.check_circle_outline}) {
+  ScaffoldMessenger.of(context).clearSnackBars();
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    backgroundColor: LinkUpColors.navy,
+    behavior: SnackBarBehavior.floating,
+    margin: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    duration: const Duration(seconds: 3),
+    content: Row(
+      children: [
+        Icon(icon, color: LinkUpColors.gold, size: 18),
+        const SizedBox(width: 10),
+        Expanded(child: Text(message, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600))),
+      ],
+    ),
+  ));
+}

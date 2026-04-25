@@ -32,7 +32,12 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                 LuTopBar(
                   title: 'Empresa',
                   leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
-                  actions: [LuIconBtn(icon: Icons.more_horiz, onPressed: () {})],
+                  actions: [LuIconBtn(icon: Icons.more_horiz, onPressed: () => LuBottomSheet.show(context, title: c.name, actions: [
+                    LuBottomSheetAction(icon: Icons.share_outlined, label: 'Partilhar perfil', onTap: () => luSnack(context, 'Link copiado.')),
+                    LuBottomSheetAction(icon: Icons.bookmark_border_rounded, label: 'Guardar empresa', onTap: () => luSnack(context, 'Empresa guardada.')),
+                    LuBottomSheetAction(icon: Icons.notifications_active_outlined, label: 'Notificar quando publicar', onTap: () => luSnack(context, 'Vais receber notificações de novas vagas.')),
+                    LuBottomSheetAction(icon: Icons.report_outlined, label: 'Reportar', destructive: true, onTap: () => luSnack(context, 'Reporte enviado.')),
+                  ]))],
                 ),
                 Expanded(
                   child: SingleChildScrollView(

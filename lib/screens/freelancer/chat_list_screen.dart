@@ -23,7 +23,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
         LuTopBar(
           title: 'Mensagens',
           large: true,
-          actions: [LuIconBtn(icon: Icons.search, onPressed: () {})],
+          actions: [LuIconBtn(icon: Icons.search, onPressed: () {
+            showSearch(context: context, delegate: _ChatSearchDelegate(onChat: widget.onChat));
+          })],
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
@@ -138,6 +140,49 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         child: Text(label, style: TextStyle(color: on ? Colors.white : LinkUpColors.textPrimary, fontSize: 12.5, fontWeight: FontWeight.w600)),
       ),
+    );
+  }
+}
+
+class _ChatSearchDelegate extends SearchDelegate<String?> {
+  final void Function(String) onChat;
+  _ChatSearchDelegate({required this.onChat});
+
+  @override
+  List<Widget>? buildActions(BuildContext context) =>
+      [if (query.isNotEmpty) IconButton(icon: const Icon(Icons.close), onPressed: () => query = '')];
+
+  @override
+  Widget? buildLeading(BuildContext context) =>
+      IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => close(context, null));
+
+  @override
+  Widget buildSuggestions(BuildContext context) => buildResults(context);
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final q = query.toLowerCase();
+    final results = q.isEmpty ? chats : chats.where((c) =>
+      c.name.toLowerCase().contains(q) || c.lastMessage.toLowerCase().contains(q)
+    ).toList();
+    if (results.isEmpty) {
+      return const Center(child: Padding(
+        padding: EdgeInsets.all(40),
+        child: Text('Nenhuma conversa.', style: TextStyle(color: LinkUpColors.textMuted)),
+      ));
+    }
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (_, i) {
+        final c = results[i];
+        return ListTile(
+          leading: LuAvatar(initials: c.avatar, bg: c.bg, size: 40),
+          title: Text(c.name.split(' · ').first, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+          subtitle: Text(c.lastMessage, maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: LinkUpColors.textMuted)),
+          onTap: () { close(context, c.id); onChat(c.id); },
+        );
+      },
     );
   }
 }

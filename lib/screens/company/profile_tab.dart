@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 import '../../data.dart';
+import 'team_screen.dart';
+import 'company_profile_edit_screen.dart';
+import '../freelancer/ubuntu_verification_screen.dart';
 
 class CompanyProfileTab extends StatelessWidget {
   final VoidCallback onContracts;
@@ -89,11 +92,19 @@ class CompanyProfileTab extends StatelessWidget {
                 const SizedBox(height: 6),
                 _row(Icons.star_outline_rounded, 'Avaliar freelancer', onTap: onRate),
                 const SizedBox(height: 6),
-                _row(Icons.group_outlined, 'Equipa & permissões'),
+                Builder(builder: (ctx) => _row(Icons.group_outlined, 'Equipa & permissões',
+                  right: const LuPill('4 membros', color: PillColor.navy, size: PillSize.sm),
+                  onTap: () => Navigator.push(ctx, MaterialPageRoute(builder: (_) => const TeamScreen())),
+                )),
                 const SizedBox(height: 6),
-                _row(Icons.business_rounded, 'Editar perfil da empresa'),
+                Builder(builder: (ctx) => _row(Icons.business_rounded, 'Editar perfil da empresa',
+                  onTap: () => Navigator.push(ctx, MaterialPageRoute(builder: (_) => const CompanyProfileEditScreen())),
+                )),
                 const SizedBox(height: 6),
-                _row(Icons.shield_outlined, 'Verificação Ubuntu', right: const LuPill('activa', color: PillColor.gold, size: PillSize.sm)),
+                Builder(builder: (ctx) => _row(Icons.shield_outlined, 'Verificação Ubuntu',
+                  right: const LuPill('activa', color: PillColor.gold, size: PillSize.sm),
+                  onTap: () => Navigator.push(ctx, MaterialPageRoute(builder: (_) => const UbuntuVerificationScreen())),
+                )),
               ],
             ),
           ),

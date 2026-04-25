@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
+import 'contract_detail_screen.dart';
 
 class ContractsScreen extends StatelessWidget {
   const ContractsScreen({super.key});
@@ -24,7 +25,7 @@ class ContractsScreen extends StatelessWidget {
               title: 'Contratos',
               large: true,
               leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
-              actions: [LuIconBtn(icon: Icons.download_rounded, onPressed: () {})],
+              actions: [LuIconBtn(icon: Icons.download_rounded, onPressed: () => luSnack(context, 'Contratos exportados em PDF.'))],
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -62,6 +63,18 @@ class ContractsScreen extends StatelessWidget {
                     for (final c in _contracts) Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: LuCard(
+                        onTap: () => Navigator.push(context, MaterialPageRoute(
+                          builder: (_) => ContractDetailScreen(
+                            contractId: c.id,
+                            title: c.title,
+                            freelancer: c.f,
+                            avatar: c.a,
+                            avatarBg: c.bg,
+                            amount: c.amount,
+                            status: c.status,
+                            due: c.due,
+                          ),
+                        )),
                         padding: const EdgeInsets.all(14),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,

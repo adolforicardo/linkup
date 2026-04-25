@@ -3,8 +3,9 @@ import '../../theme.dart';
 import '../../widgets.dart';
 
 class CompanyOnboardingScreen extends StatelessWidget {
-  final VoidCallback onLogin;
-  const CompanyOnboardingScreen({super.key, required this.onLogin});
+  final VoidCallback onCreateAccount;
+  final VoidCallback onSignIn;
+  const CompanyOnboardingScreen({super.key, required this.onCreateAccount, required this.onSignIn});
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +89,9 @@ class CompanyOnboardingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 28),
-            LuBtn('Registar a minha empresa', variant: BtnVariant.navy, full: true, size: BtnSize.lg, onPressed: onLogin),
+            LuBtn('Registar a minha empresa', variant: BtnVariant.navy, full: true, size: BtnSize.lg, onPressed: onCreateAccount),
             const SizedBox(height: 10),
-            LuBtn('Já temos conta', variant: BtnVariant.secondary, full: true, size: BtnSize.lg, onPressed: onLogin),
+            LuBtn('Já temos conta', variant: BtnVariant.secondary, full: true, size: BtnSize.lg, onPressed: onSignIn),
           ],
         ),
       ),

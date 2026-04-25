@@ -13,6 +13,7 @@ import 'contracts_screen.dart';
 import '../freelancer/chat_list_screen.dart';
 import '../freelancer/chat_screen.dart';
 import '../freelancer/settings_screen.dart';
+import '../../shell.dart';
 
 class CompanyShell extends StatefulWidget {
   const CompanyShell({super.key});
@@ -49,7 +50,7 @@ class _CompanyShellState extends State<CompanyShell> {
       CompanyProfileTab(
         onContracts: () => _push(const ContractsScreen()),
         onRate: () => _push(const RateFreelancerScreen()),
-        onSettings: () => _push(const SettingsScreen()),
+        onSettings: () => _push(const SettingsScreen(role: LinkUpRole.company)),
       ),
     ];
 

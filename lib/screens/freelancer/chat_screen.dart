@@ -100,7 +100,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       ],
                     ),
                   ),
-                  LuIconBtn(icon: Icons.more_horiz, onPressed: () {}),
+                  LuIconBtn(icon: Icons.more_horiz, onPressed: () => LuBottomSheet.show(context, title: 'Conversa', actions: [
+                    LuBottomSheetAction(icon: Icons.notifications_off_outlined, label: 'Silenciar', onTap: () => luSnack(context, 'Conversa silenciada por 8 horas.')),
+                    LuBottomSheetAction(icon: Icons.archive_outlined, label: 'Arquivar', onTap: () { luSnack(context, 'Conversa arquivada.'); Navigator.pop(context); }),
+                    LuBottomSheetAction(icon: Icons.search_rounded, label: 'Pesquisar nesta conversa', onTap: () => luSnack(context, 'Pesquisa na conversa.')),
+                    LuBottomSheetAction(icon: Icons.report_outlined, label: 'Reportar', destructive: true, onTap: () => luSnack(context, 'Reporte enviado à equipa de moderação.')),
+                  ])),
                 ],
               ),
             ),
@@ -146,10 +151,18 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               child: Row(
                 children: [
-                  Container(
-                    width: 38, height: 38,
-                    decoration: BoxDecoration(color: Colors.white, border: Border.all(color: LinkUpColors.border), borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.attach_file, size: 18, color: LinkUpColors.textSecondary),
+                  GestureDetector(
+                    onTap: () => LuBottomSheet.show(context, title: 'Anexar', actions: [
+                      LuBottomSheetAction(icon: Icons.image_outlined, label: 'Foto / vídeo', sub: 'Galeria', onTap: () => luSnack(context, 'Galeria aberta.')),
+                      LuBottomSheetAction(icon: Icons.insert_drive_file_outlined, label: 'Ficheiro', sub: 'PDF, DOCX, ZIP', onTap: () => luSnack(context, 'Selecciona um ficheiro.')),
+                      LuBottomSheetAction(icon: Icons.account_balance_wallet_outlined, label: 'Cotação M-Pesa', onTap: () => luSnack(context, 'Cotação enviada.')),
+                      LuBottomSheetAction(icon: Icons.description_outlined, label: 'Anexar contrato', onTap: () => luSnack(context, 'Contrato anexado.')),
+                    ]),
+                    child: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(color: Colors.white, border: Border.all(color: LinkUpColors.border), borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(Icons.attach_file, size: 18, color: LinkUpColors.textSecondary),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -174,7 +187,13 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             ),
                           ),
-                          const Icon(Icons.mic_none_rounded, size: 18, color: LinkUpColors.textMuted),
+                          GestureDetector(
+                            onTap: () => luSnack(context, 'Mantém pressionado para gravar áudio.', icon: Icons.mic_rounded),
+                            child: const Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Icon(Icons.mic_none_rounded, size: 18, color: LinkUpColors.textMuted),
+                            ),
+                          ),
                         ],
                       ),
                     ),

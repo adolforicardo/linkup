@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 import '../../data.dart';
+import 'withdraw_screen.dart';
+import 'wallet_history_screen.dart';
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
@@ -19,7 +21,7 @@ class WalletScreen extends StatelessWidget {
               title: 'Carteira',
               large: true,
               leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
-              actions: [LuIconBtn(icon: Icons.download_rounded, onPressed: () {})],
+              actions: [LuIconBtn(icon: Icons.download_rounded, onPressed: () => luSnack(context, 'Recibo enviado por email.'))],
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -86,9 +88,11 @@ class WalletScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           Row(
                             children: [
-                              LuBtn('Levantar', variant: BtnVariant.gold, size: BtnSize.sm, onPressed: () {}),
+                              LuBtn('Levantar', variant: BtnVariant.gold, size: BtnSize.sm, icon: Icons.south_rounded,
+                                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WithdrawScreen()))),
                               const SizedBox(width: 8),
-                              LuBtn('Histórico', variant: BtnVariant.secondary, size: BtnSize.sm, onPressed: () {}),
+                              LuBtn('Histórico', variant: BtnVariant.secondary, size: BtnSize.sm, icon: Icons.history_rounded,
+                                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletHistoryScreen()))),
                             ],
                           ),
                         ],

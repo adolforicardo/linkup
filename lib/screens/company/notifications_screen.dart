@@ -23,10 +23,23 @@ class CompanyNotificationsScreen extends StatelessWidget {
             LuTopBar(
               title: 'Notificações',
               leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
-              actions: const [
-                Padding(
-                  padding: EdgeInsets.only(right: 12),
-                  child: Text('Limpar', style: TextStyle(color: LinkUpColors.navy, fontWeight: FontWeight.w700, fontSize: 13)),
+              actions: [
+                GestureDetector(
+                  onTap: () async {
+                    final ok = await LuConfirmDialog.show(context,
+                      title: 'Limpar notificações?',
+                      message: 'Todas as notificações lidas serão removidas.',
+                      confirmLabel: 'Limpar', destructive: true,
+                    );
+                    if (ok && context.mounted) {
+                      luSnack(context, 'Notificações limpas.');
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: Text('Limpar', style: TextStyle(color: LinkUpColors.navy, fontWeight: FontWeight.w700, fontSize: 13)),
+                  ),
                 ),
               ],
             ),

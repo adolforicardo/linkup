@@ -33,8 +33,14 @@ class FreelancerDetailScreen extends StatelessWidget {
                   title: 'Freelancer',
                   leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
                   actions: [
-                    LuIconBtn(icon: Icons.star_outline_rounded, onPressed: () {}),
-                    LuIconBtn(icon: Icons.more_horiz, onPressed: () {}),
+                    LuIconBtn(icon: Icons.star_outline_rounded,
+                      onPressed: () => luSnack(context, 'Freelancer adicionado aos favoritos.', icon: Icons.star_rounded),
+                    ),
+                    LuIconBtn(icon: Icons.more_horiz, onPressed: () => LuBottomSheet.show(context, title: f.name, actions: [
+                      LuBottomSheetAction(icon: Icons.share_outlined, label: 'Partilhar perfil', onTap: () => luSnack(context, 'Link copiado.')),
+                      LuBottomSheetAction(icon: Icons.bookmark_border_rounded, label: 'Guardar para mais tarde', onTap: () => luSnack(context, 'Freelancer guardado.')),
+                      LuBottomSheetAction(icon: Icons.report_outlined, label: 'Reportar', destructive: true, onTap: () => luSnack(context, 'Reporte enviado.')),
+                    ])),
                   ],
                 ),
                 Expanded(

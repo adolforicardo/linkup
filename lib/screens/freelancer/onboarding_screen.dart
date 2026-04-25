@@ -3,8 +3,9 @@ import '../../theme.dart';
 import '../../widgets.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  final VoidCallback onLogin;
-  const OnboardingScreen({super.key, required this.onLogin});
+  final VoidCallback onCreateAccount;
+  final VoidCallback onSignIn;
+  const OnboardingScreen({super.key, required this.onCreateAccount, required this.onSignIn});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -35,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const LuWordmark(fontSize: 16),
                 const Spacer(),
                 GestureDetector(
-                  onTap: widget.onLogin,
+                  onTap: widget.onSignIn,
                   child: const Text('Saltar', style: TextStyle(color: LinkUpColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
                 ),
               ],
@@ -112,9 +113,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             else
               Column(
                 children: [
-                  LuBtn('Criar conta', variant: BtnVariant.primary, full: true, size: BtnSize.lg, onPressed: widget.onLogin),
+                  LuBtn('Criar conta', variant: BtnVariant.primary, full: true, size: BtnSize.lg, onPressed: widget.onCreateAccount),
                   const SizedBox(height: 10),
-                  LuBtn('Já tenho conta', variant: BtnVariant.secondary, full: true, size: BtnSize.lg, onPressed: widget.onLogin),
+                  LuBtn('Já tenho conta', variant: BtnVariant.secondary, full: true, size: BtnSize.lg, onPressed: widget.onSignIn),
                 ],
               ),
           ],

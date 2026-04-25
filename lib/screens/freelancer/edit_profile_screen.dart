@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 import '../../data.dart';
+import 'record_video_intro_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -65,14 +66,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             LuAvatar(initials: u.avatar, bg: u.avatarBg, size: 88),
                             Positioned(
                               right: 0, bottom: 0,
-                              child: Container(
-                                width: 30, height: 30,
-                                decoration: BoxDecoration(
-                                  color: LinkUpColors.green,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 3),
+                              child: GestureDetector(
+                                onTap: () => LuBottomSheet.show(context, title: 'Foto de perfil', actions: [
+                                  LuBottomSheetAction(icon: Icons.camera_alt_outlined, label: 'Tirar foto', onTap: () => luSnack(context, 'Câmara aberta.')),
+                                  LuBottomSheetAction(icon: Icons.image_outlined, label: 'Escolher da galeria', onTap: () => luSnack(context, 'Galeria aberta.')),
+                                  LuBottomSheetAction(icon: Icons.delete_outline, label: 'Remover foto', destructive: true, onTap: () => luSnack(context, 'Foto removida.')),
+                                ]),
+                                child: Container(
+                                  width: 30, height: 30,
+                                  decoration: BoxDecoration(
+                                    color: LinkUpColors.green,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 3),
+                                  ),
+                                  child: const Icon(Icons.edit, size: 13, color: Colors.white),
                                 ),
-                                child: const Icon(Icons.edit, size: 13, color: Colors.white),
                               ),
                             ),
                           ],
@@ -121,7 +129,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ],
                             ),
                           ),
-                          LuBtn('Gravar', variant: BtnVariant.secondary, size: BtnSize.sm, onPressed: () {}),
+                          LuBtn('Gravar', variant: BtnVariant.secondary, size: BtnSize.sm,
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecordVideoIntroScreen()))),
                         ],
                       ),
                     ),

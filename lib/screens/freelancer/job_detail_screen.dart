@@ -26,8 +26,15 @@ class JobDetailScreen extends StatelessWidget {
                   title: 'Oportunidade',
                   leading: LuIconBtn(icon: Icons.chevron_left, onPressed: () => Navigator.pop(context)),
                   actions: [
-                    LuIconBtn(icon: Icons.star_outline_rounded, onPressed: () {}),
-                    LuIconBtn(icon: Icons.more_horiz, onPressed: () {}),
+                    LuIconBtn(icon: Icons.star_outline_rounded,
+                      onPressed: () => luSnack(context, 'Vaga guardada nos favoritos.', icon: Icons.star_rounded),
+                    ),
+                    LuIconBtn(icon: Icons.more_horiz, onPressed: () => LuBottomSheet.show(context, title: 'Vaga', actions: [
+                      LuBottomSheetAction(icon: Icons.share_outlined, label: 'Partilhar', onTap: () => luSnack(context, 'Link copiado.')),
+                      LuBottomSheetAction(icon: Icons.link_rounded, label: 'Copiar link', onTap: () => luSnack(context, 'Link copiado.')),
+                      LuBottomSheetAction(icon: Icons.notifications_off_outlined, label: 'Não me mostrar similares', onTap: () => luSnack(context, 'Vagas similares ocultadas.')),
+                      LuBottomSheetAction(icon: Icons.report_outlined, label: 'Reportar vaga', destructive: true, onTap: () => luSnack(context, 'Reporte enviado.')),
+                    ])),
                   ],
                 ),
                 Expanded(
